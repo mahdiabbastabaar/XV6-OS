@@ -5,12 +5,15 @@
 #include "defs.h"
 
 volatile static int started = 0;
+uint64 Goldfish_rtc_get_time(void);
 
 // start() jumps here in supervisor mode on all CPUs.
 void
 main()
 {
   if(cpuid() == 0){
+    int time_result = (int) Goldfish_rtc_get_time();
+    printf("Hirbodzg time is %d\n", time_result);
     consoleinit();
     printfinit();
     printf("\n");
@@ -42,4 +45,13 @@ main()
   }
 
   scheduler();        
+}
+
+uint64 Goldfish_rtc_get_time()
+{
+    uint64* address_ptr = (uint64*)0x101000;
+    uint64 value = *address_ptr;
+    uint64 divided_value = value / 1000000000;
+
+    return divided_value;
 }
